@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#061018">
+<title>CAMVIVO Estable</title>
+<style>
+  :root {
+    --bg: #061018;
+    --surface: #0b141e;
+    --surface-2: #0f1b26;
+    --card: #122130;
+    --border: #1e3042;
+    --text: #dde9f3;
+    --muted: #7a90a3;
+    --accent: #3ad0ff;
+    --accent-2: #61ff9f;
+    --danger: #ff5a77;
+    --shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(180deg, #061018 0%, #08131d 100%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  a { color: inherit; }
+
+  .shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 14px 40px;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(6, 16, 24, 0.95);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .brand-small {
+    font-size: 11px;
+    letter-spacing: 1.3px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .brand-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    color: var(--accent);
+  }
+
+  .brand-meta {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .status-pill {
+    flex-shrink: 0;
+    border: 1px solid rgba(97, 255, 159, 0.3);
+    background: rgba(97, 255, 159, 0.08);
+    color: var(--accent-2);
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 14px 0 18px;
+  }
+
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 88px;
+  }
+
+  .tool-card:hover, .tool-card:active {
+    border-color: var(--accent);
+    background: rgba(58, 208, 255, 0.06);
+  }
+
+  .tool-name {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .tool-copy {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+
+  nav::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .tab.active {
+    color: #041017;
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .search {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 13px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .search:focus { border-color: var(--accent); }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .count {
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 4px 8px;
+  }
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .card:hover, .card:active {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    background: linear-gradient(135deg, #0d2230, #16435a);
+  }
+
+  .thumb.costa { background: linear-gradient(135deg, #0b2233, #005b72); }
+  .thumb.sur { background: linear-gradient(135deg, #0f1a29, #1f3550); }
+  .thumb.pinamar { background: linear-gradient(135deg, #0f2130, #2d5b4f); }
+  .thumb.santa { background: linear-gradient(135deg, #102033, #36517a); }
+  .thumb.patagonia { background: linear-gradient(135deg, #152130, #415d76); }
+  .thumb.tv { background: linear-gradient(135deg, #23162f, #4d255f); }
+
+  .badge-row {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .badge {
+    font-size: 10px;
+    border-radius: 999px;
+    padding: 4px 7px;
+    background: rgba(6, 16, 24, 0.74);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .badge.ok {
+    color: var(--accent-2);
+    border-color: rgba(97, 255, 159, 0.25);
+  }
+
+  .badge.src {
+    color: var(--accent);
+  }
+
+  .play {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    background: rgba(6, 16, 24, 0.55);
+    border: 1px solid rgba(58, 208, 255, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .info {
+    padding: 10px 11px 12px;
+  }
+
+  .name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .meta {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 100;
+  }
+
+  .backdrop.open { display: block; }
+
+  .sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 101;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .sheet.open { transform: translateY(0); }
+
+  .handle {
+    width: 38px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border);
+    margin: 9px auto 0;
+  }
+
+  .sheet-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px 10px;
+  }
+
+  .sheet-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.2;
+  }
+
+  .sheet-loc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+
+  .sheet-close {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .sheet-body {
+    padding: 0 16px 18px;
+  }
+
+  .detail-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #c8d5df;
+  }
+
+  .detail-box strong { color: var(--text); }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .action {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .action:hover, .action:active {
+    border-color: var(--accent);
+    background: rgba(58, 208, 255, 0.06);
+  }
+
+  .icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    background: #152635;
+  }
+
+  .icon.cam { background: rgba(58, 208, 255, 0.16); }
+  .icon.wind { background: rgba(97, 255, 159, 0.14); }
+  .icon.info { background: rgba(255, 90, 119, 0.14); }
+
+  .action-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .action-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .action-sub {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  .tip {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  #topBtn {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 40px;
+    height: 40px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--accent);
+    cursor: pointer;
+    z-index: 60;
+  }
+
+  #topBtn.show { display: flex; }
+
+  @media (min-width: 680px) {
+    .tools { grid-template-columns: repeat(5, 1fr); }
+    .toolbar { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  }
+
+  @media (min-width: 980px) {
+    .grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-small">Cámaras, TV y cine</div>
+      <div class="brand-title">CAMVIVO Estable</div>
+      <div class="brand-meta" id="versionLine">v1.2 · 11/05/2026</div>
+    </div>
+    <div class="status-pill">Oficiales / curadas</div>
+  </div>
+</header>
+
+<div class="shell">
+  <section class="tools" id="tools"></section>
+
+  <nav id="tabs"></nav>
+
+  <div class="toolbar">
+    <input class="search" id="searchInput" type="search" placeholder="Buscar cámara, ciudad, playa o canal">
+  </div>
+
+  <div class="section-head">
+    <div class="section-label" id="sectionLabel">Destacadas</div>
+    <div class="count" id="sectionCount">0 fuentes</div>
+    <div class="line"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="handle"></div>
+  <div class="sheet-head">
+    <div>
+      <div class="sheet-title" id="sheetTitle"></div>
+      <div class="sheet-loc" id="sheetLoc"></div>
+    </div>
+    <button class="sheet-close" type="button" onclick="closeSheet()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="detail-box" id="sheetDetails"></div>
+    <div class="actions" id="sheetActions"></div>
+    <div class="tip">Abrimos fuentes oficiales o curadas para evitar iframes bloqueados, embeds rotos y enlaces dudosos.</div>
+  </div>
+</div>
+
+<button id="topBtn" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  'use strict';
+
+  const APP_VERSION = 'v1.2';
+  const APP_DATE = '11/05/2026';
+
+  const categories = [
+    { id: 'estadodelmar', label: 'Estado del Mar' },
+    { id: 'otras', label: 'Otras webcams' },
+    { id: 'tv-es', label: 'TV en español' },
+    { id: 'cinear', label: 'CINE.AR' }
+  ];
+
+  const toolLinks = [
+    {
+      name: 'Windguru',
+      copy: 'Viento, olas, períodos, mareas y spots.',
+      url: 'https://www.windguru.cz/'
+    },
+    {
+      name: 'Windy',
+      copy: 'Mapa interactivo con viento, radar y nubes.',
+      url: 'https://www.windy.com/'
+    },
+    {
+      name: 'Ventusky',
+      copy: 'Capas avanzadas y visualización meteorológica.',
+      url: 'https://www.ventusky.com/'
+    },
+    {
+      name: 'Windfinder',
+      copy: 'Pronósticos de viento y mar para spots.',
+      url: 'https://www.windfinder.com/'
+    },
+    {
+      name: 'SMN',
+      copy: 'Alertas y pronóstico oficial para Argentina.',
+      url: 'https://www.smn.gob.ar/'
+    }
+  ];
+
+  const cameras = [
+    {
+      id: 1,
+      cat: 'estadodelmar',
+      kind: 'hub',
+      name: 'Estado del Mar',
+      loc: 'Costa argentina',
+      emoji: '🌊',
+      bg: 'costa',
+      source: 'Sitio oficial',
+      verified: '11/05/2026',
+      url: 'https://estadodelmar.com.ar/',
+      actions: [
+        {
+          title: 'Abrir portada oficial',
+          sub: 'estadodelmar.com.ar',
+          href: 'https://estadodelmar.com.ar/',
+          icon: '🌐',
+          iconClass: 'cam'
+        },
+        {
+          title: 'Camet Norte',
+          sub: 'Santa Clara del Mar',
+          href: 'https://estadodelmar.com.ar/camaras/camet-norte/',
+          icon: '📍',
+          iconClass: 'cam'
+        },
+        {
+          title: 'Sun Rider',
+          sub: 'Mar del Plata',
+          href: 'https://estadodelmar.com.ar/camaras/sun-rider/',
+          icon: '📍',
+          iconClass: 'cam'
+        },
+        {
+          title: 'Santa Teresita',
+          sub: 'Costa Atlántica',
+          href: 'https://estadodelmar.com.ar/camaras/santa-teresita/',
+          icon: '📍',
+          iconClass: 'cam'
+        },
+        {
+          title: 'El Muelle',
+          sub: 'Villa Gesell',
+          href: 'https://estadodelmar.com.ar/camaras/el-muelle/',
+          icon: '📍',
+          iconClass: 'cam'
+        },
+        {
+          title: 'Las Grutas',
+          sub: 'Río Negro',
+          href: 'https://estadodelmar.com.ar/camaras/las-grutas/',
+          icon: '📍',
+          iconClass: 'cam'
+        }
+      ]
+    },
+    {
+      id: 20,
+      cat: 'otras',
+      name: 'Ushuaia',
+      loc: 'Tierra del Fuego, Argentina',
+      emoji: '🏔',
+      bg: 'patagonia',
+      source: 'Vision-Environnement',
+      verified: '11/05/2026',
+      url: 'https://www.vision-environnement.com/es/livecams/webcam.php?webcam=ushuaia',
+      weatherQuery: 'Ushuaia Tierra del Fuego'
+    },
+    {
+      id: 21,
+      cat: 'otras',
+      name: 'Ushuaia 2',
+      loc: 'Tierra del Fuego, Argentina',
+      emoji: '🚢',
+      bg: 'patagonia',
+      source: 'Vision-Environnement',
+      verified: '11/05/2026',
+      url: 'https://www.vision-environnement.com/es/livecams/webcam.php?webcam=ushuaia2',
+      weatherQuery: 'Ushuaia puerto Tierra del Fuego'
+    },
+    {
+      id: 22,
+      cat: 'otras',
+      name: 'Río Grande',
+      loc: 'Tierra del Fuego, Argentina',
+      emoji: '🌬',
+      bg: 'patagonia',
+      source: 'Vision-Environnement',
+      verified: '11/05/2026',
+      url: 'https://www.vision-environnement.com/livecams/webcam.php?lang=en&webcam=riogrande',
+      weatherQuery: 'Rio Grande Tierra del Fuego'
+    },
+    {
+      id: 23,
+      cat: 'otras',
+      name: 'Bariloche',
+      loc: 'Río Negro, Argentina',
+      emoji: '⛰',
+      bg: 'patagonia',
+      source: 'Vision-Environnement',
+      verified: '11/05/2026',
+      url: 'https://www.vision-environnement.com/en/livecams/webcam.php?webcam=bariloche',
+      weatherQuery: 'Bariloche Rio Negro'
+    },
+    {
+      id: 24,
+      cat: 'otras',
+      name: 'Punta Arenas',
+      loc: 'Magallanes, Chile',
+      emoji: '🌎',
+      bg: 'patagonia',
+      source: 'Vision-Environnement',
+      verified: '11/05/2026',
+      url: 'https://www.vision-environnement.com/livecams/webcam.php?lang=en&webcam=punta-arenas',
+      weatherQuery: 'Punta Arenas Chile'
+    },
+    {
+      id: 40,
+      cat: 'tv-es',
+      kind: 'tv',
+      name: 'DW Español',
+      loc: 'Alemania',
+      emoji: '📰',
+      bg: 'tv',
+      source: 'Sitio oficial',
+      verified: '11/05/2026',
+      url: 'https://www.dw.com/en/live-tv/channel-spanish'
+    },
+    {
+      id: 41,
+      cat: 'tv-es',
+      kind: 'tv',
+      name: 'FRANCE 24 Español',
+      loc: 'Francia',
+      emoji: '🇫🇷',
+      bg: 'tv',
+      source: 'YouTube oficial',
+      verified: '11/05/2026',
+      url: 'https://www.youtube.com/live/Y-IlMeCCtIg'
+    },
+    {
+      id: 42,
+      cat: 'tv-es',
+      kind: 'tv',
+      name: 'Euronews Español',
+      loc: 'Europa',
+      emoji: '📺',
+      bg: 'tv',
+      source: 'Sitio oficial',
+      verified: '11/05/2026',
+      url: 'https://es.euronews.com/live'
+    },
+    {
+      id: 43,
+      cat: 'tv-es',
+      kind: 'tv',
+      name: 'RTVE 24 Horas',
+      loc: 'España',
+      emoji: '📻',
+      bg: 'tv',
+      source: 'Sitio oficial',
+      verified: '11/05/2026',
+      url: 'https://www.rtve.es/directo/canal-24h/'
+    },
+    {
+      id: 60,
+      cat: 'cinear',
+      kind: 'service',
+      name: 'CINE.AR',
+      loc: 'Películas y series argentinas',
+      emoji: '🎬',
+      bg: 'tv',
+      source: 'Sitio oficial',
+      verified: '11/05/2026',
+      url: 'https://play.cine.ar/',
+      actions: [
+        {
+          title: 'Abrir CINE.AR Play',
+          sub: 'play.cine.ar',
+          href: 'https://play.cine.ar/',
+          icon: '🎬',
+          iconClass: 'cam'
+        },
+        {
+          title: 'Ver cine en RTVE Play',
+          sub: 'Alternativa legal adicional',
+          href: 'https://www.rtve.es/play/cine/',
+          icon: '🎥',
+          iconClass: 'info'
+        }
+      ]
+    }
+  ];
+
+  let activeCategory = 'estadodelmar';
+  let searchTerm = '';
+
+  const versionLine = document.getElementById('versionLine');
+  versionLine.textContent = `${APP_VERSION} · ${APP_DATE}`;
+
+  const toolsEl = document.getElementById('tools');
+  toolLinks.forEach(tool => {
+    const a = document.createElement('a');
+    a.className = 'tool-card';
+    a.href = tool.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.innerHTML = `
+      <div class="tool-name">${tool.name}</div>
+      <div class="tool-copy">${tool.copy}</div>
+    `;
+    toolsEl.appendChild(a);
+  });
+
+  const tabsEl = document.getElementById('tabs');
+  categories.forEach(cat => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `tab${cat.id === activeCategory ? ' active' : ''}`;
+    button.textContent = cat.label;
+    button.dataset.id = cat.id;
+    button.addEventListener('click', () => {
+      activeCategory = cat.id;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    tabsEl.appendChild(button);
+  });
+
+  document.getElementById('searchInput').addEventListener('input', event => {
+    searchTerm = event.target.value.trim().toLowerCase();
+    render();
+  });
+
+  function toolSearch(site, query) {
+    return `https://www.google.com/search?q=${encodeURIComponent(`site:${site} ${query}`)}`;
+  }
+
+  function mapsSearch(query) {
+    return `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
+  }
+
+  function render() {
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.id === activeCategory);
+    });
+
+    const currentCategory = categories.find(cat => cat.id === activeCategory);
+    const label = currentCategory ? currentCategory.label : 'Cámaras';
+    document.getElementById('sectionLabel').textContent = label;
+
+    const items = cameras.filter(cam => {
+      const catMatch = cam.cat === activeCategory;
+      if (!catMatch) return false;
+      if (!searchTerm) return true;
+      const haystack = `${cam.name} ${cam.loc} ${cam.weatherQuery || ''}`.toLowerCase();
+      return haystack.includes(searchTerm);
+    });
+
+    document.getElementById('sectionCount').textContent = `${items.length} fuentes verificadas`;
+
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+
+    if (!items.length) {
+      grid.innerHTML = '<div class="empty">No encontré fuentes con ese filtro en esta categoría.</div>';
+      return;
+    }
+
+    items.forEach(cam => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="thumb ${cam.bg}">
+          <div class="badge-row">
+            <div class="badge ok">Verificada ${cam.verified}</div>
+            <div class="badge src">${cam.source}</div>
+          </div>
+          <div class="play">▶</div>
+        </div>
+        <div class="info">
+          <div class="name">${cam.name}</div>
+          <div class="meta">${cam.loc}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => openSheet(cam));
+      grid.appendChild(card);
+    });
+  }
+
+  function openSheet(cam) {
+    document.getElementById('sheetTitle').textContent = cam.name;
+    document.getElementById('sheetLoc').textContent = cam.loc;
+    const isTv = cam.kind === 'tv';
+    const isHub = cam.kind === 'hub';
+    const isService = cam.kind === 'service';
+    document.getElementById('sheetDetails').innerHTML = isTv ? `
+      <strong>Fuente:</strong> ${cam.source}<br>
+      <strong>Última revisión:</strong> ${cam.verified}<br>
+      <strong>Uso recomendado:</strong> abrir siempre la señal oficial o el canal verificado.
+    ` : isHub ? `
+      <strong>Fuente:</strong> ${cam.source}<br>
+      <strong>Última revisión:</strong> ${cam.verified}<br>
+      <strong>Uso recomendado:</strong> entrar por la portada oficial o ir directo a uno de los spots ya probados.
+    ` : isService ? `
+      <strong>Fuente:</strong> ${cam.source}<br>
+      <strong>Última revisión:</strong> ${cam.verified}<br>
+      <strong>Uso recomendado:</strong> usar la plataforma oficial y buscar el título desde allí.
+    ` : `
+      <strong>Fuente:</strong> ${cam.source}<br>
+      <strong>Última revisión:</strong> ${cam.verified}<br>
+      <strong>Uso recomendado:</strong> abrir la fuente directa y complementar con viento / oleaje del mismo spot.
+    `;
+
+    let actions;
+    if (isTv) {
+      actions = [
+        {
+          iconClass: 'cam',
+          icon: '📺',
+          title: 'Abrir señal oficial',
+          sub: cam.url.replace('https://', '').split('/').slice(0, 2).join('/'),
+          href: cam.url
+        },
+        ...(cam.extraLinks || [])
+      ];
+    } else if (isHub || isService) {
+      actions = cam.actions || [];
+    } else {
+      actions = [
+        {
+          iconClass: 'cam',
+          icon: '📡',
+          title: 'Abrir cámara',
+          sub: cam.url.replace('https://', '').split('/').slice(0, 2).join('/'),
+          href: cam.url
+        },
+        {
+          iconClass: 'wind',
+          icon: '🌬',
+          title: 'Buscar en Windguru',
+          sub: 'Viento, olas, período y marea',
+          href: toolSearch('windguru.cz', cam.weatherQuery)
+        },
+        {
+          iconClass: 'wind',
+          icon: '🗺',
+          title: 'Buscar en Windy',
+          sub: 'Mapa de viento, nubes y radar',
+          href: toolSearch('windy.com', cam.weatherQuery)
+        },
+        {
+          iconClass: 'wind',
+          icon: '📈',
+          title: 'Buscar en Windfinder',
+          sub: 'Pronóstico y spots de viento',
+          href: toolSearch('windfinder.com', cam.weatherQuery)
+        },
+        {
+          iconClass: 'info',
+          icon: '☁',
+          title: 'Buscar en Ventusky',
+          sub: 'Capas meteorológicas avanzadas',
+          href: toolSearch('ventusky.com', cam.weatherQuery)
+        },
+        {
+          iconClass: 'info',
+          icon: '🇦🇷',
+          title: 'Buscar en SMN',
+          sub: 'Pronóstico oficial argentino',
+          href: toolSearch('smn.gob.ar', cam.weatherQuery)
+        },
+        {
+          iconClass: 'info',
+          icon: '📍',
+          title: 'Abrir en Google Maps',
+          sub: 'Ubicación y acceso rápido',
+          href: mapsSearch(cam.loc)
+        }
+      ];
+    }
+
+    const sheetActions = document.getElementById('sheetActions');
+    sheetActions.innerHTML = actions.map(action => `
+      <a class="action" href="${action.href}" target="_blank" rel="noopener noreferrer">
+        <div class="icon ${action.iconClass}">${action.icon}</div>
+        <div class="action-text">
+          <div class="action-title">${action.title}</div>
+          <div class="action-sub">${action.sub}</div>
+        </div>
+      </a>
+    `).join('');
+
+    document.getElementById('backdrop').classList.add('open');
+    const sheet = document.getElementById('sheet');
+    sheet.classList.add('open');
+    sheet.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSheet() {
+    document.getElementById('backdrop').classList.remove('open');
+    const sheet = document.getElementById('sheet');
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeSheet();
+  });
+
+  window.addEventListener('scroll', () => {
+    document.getElementById('topBtn').classList.toggle('show', window.scrollY > 280);
+  });
+
+  render();
+</script>
+</body>
+</html>
